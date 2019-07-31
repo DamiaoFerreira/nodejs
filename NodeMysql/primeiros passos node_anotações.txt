@@ -1,0 +1,27 @@
+instalando:
+express : facilita a criação de aplicação http
+npm install express --save
+
+o save ira salvar permanentemente os aquivo na pagina do projeto
+
+nodemon: restart o servidor após alteração de arquivos.
+npm install nodemon -g
+
+g: ir� disponibiliza o nodemon para todos os projetos
+
+agora podemos roda a aplica��o
+node index.js ou nodemon index.js
+o nodemon ira restart o servidor sempre que houver altera��o no projeto.
+
+sequelize: facilita a criação dos models no BD - é um ORM, tipo HIBERNATE
+
+npm install --save sequelize
+
+handlebars: facilita a interação entre o HTML e o nodes.js, é um template engine
+
+npm install --save express-handlebars
+
+body-parser: serve para receber dados de formulários
+npm install --save body-parser
+
+mongoose: facilita a criação de models no BD - é um ODM, tipo HIBERNATE, mas voltado para mongoDB, banco orientado a documento

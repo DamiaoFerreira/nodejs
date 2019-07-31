@@ -1,0 +1,13 @@
+<h3>Nova categoria</h3>
+<div class="card">
+  <div class="card-body">
+    <form action="/admin/category/add" method="post">
+      <label for="nome">Nome:</label>
+      <input type="text" name="nome" id="nome" placeholder="Nome da categoria" class="form-control" required>
+      <label for="slug">Slug:</label>
+      <input type="text" name="slug" placeholder="slug" class="form-control" required>
+      <br>
+      <button type="submit" name="addcategoria" class="btn btn-success btn-block">SALVAR</button>
+    </form>
+  </div>
+</div>
