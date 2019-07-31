@@ -25,10 +25,17 @@ const admin = require("./routes/admin")
     console.log("erro ao se conectar com o mongodb"+err);
   })
 
+  // middleware -> chamando antes de todo request
+  app.use((req, res, next)=>{
+    console.log("Hello World Midllewares");
+    next(); // liberar a aplicação
+  })
   //Public
   app.use(express.static(path.join(__dirname, "public")))
-//Rotas
-app.use("/admin", admin)
+
+
+  //Rotas
+  app.use("/admin", admin)
 
 //Outros
 const port = 8081
