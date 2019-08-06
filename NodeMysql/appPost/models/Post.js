@@ -9,6 +9,7 @@ const Post = db.sequelize.define('postagens', {
   }
 })
 
+// Criar o banco
 // Post.sync({force:true})
 
 module.exports = Post

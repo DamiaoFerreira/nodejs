@@ -10,10 +10,7 @@ router.get('/', (req, res)=>{
   res.render("admin/index")
 })
 
-router.get('/posts', (req, res)=>{
-  res.send("Página de posts")
-})
-
+// started category
 router.get("/category", (req, res)=>{
   Categoria.find().sort({date:'desc'}).then((categoria)=>{
     res.render("admin/category", {categorias: categoria})
@@ -97,5 +94,21 @@ router.post("/category/deletar", (req, res)=>{
     res.redirect("/admin/category")
   })
 })
+// finished category
 
+// started posts
+router.get("/posts", (req, res)=>{
+  res.render("admin/posts")
+})
+
+router.get("/posts/add", (req, res)=>{
+  Categoria.find().then((categorias)=>{
+    res.render("admin/postsform", {categorias: categorias})
+  }).catch((err)=>{
+    req.flash("error_msg", "Houve um erro ao carregar o formulário")
+    res.redirect("/admin/posts")
+  })
+})
+
+// finished posts
 module.exports = router
