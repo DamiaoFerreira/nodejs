@@ -6,6 +6,10 @@ const mongoose = require('mongoose')
 require("../models/Category")
 const Categoria = mongoose.model('Categories')
 
+require("../models/Post")
+const Postagem = mongoose.model("Posts")
+
+
 router.get('/', (req, res)=>{
   res.render("admin/index")
 })
@@ -98,16 +102,48 @@ router.post("/category/deletar", (req, res)=>{
 
 // started posts
 router.get("/posts", (req, res)=>{
-  res.render("admin/posts")
+  Postagem.find().populate("Categories").sort({data:"desc"}).then((postagens)=>{
+    res.render("admin/posts", {postagens:postagens})
+  }).catch((err)=>{
+    req.flash("error_msg", "Houver um erro ao listar as postagens")
+    res.rendirect("/admin")
+  })
 })
 
-router.get("/posts/add", (req, res)=>{
+router.get("/posts/form", (req, res)=>{
   Categoria.find().then((categorias)=>{
     res.render("admin/postsform", {categorias: categorias})
   }).catch((err)=>{
     req.flash("error_msg", "Houve um erro ao carregar o formulário")
     res.redirect("/admin/posts")
   })
+})
+
+router.post("/posts/add",(req, res)=>{
+  var erros = []
+  if(req.body.catecogy == "0"){
+    erros.push({texto:"Categoria inválida, registre uma categoria"})
+  }
+
+  if(erros.length > 0){
+    res.render("admin/postsform", {erros: erros})
+  }else{
+    const novaPostagem = {
+      titulo: req.body.title,
+      descricao: req.body.describe,
+      conteudo: req.body.content,
+      categoria: req.body.category,
+      slug: req.body.slug
+    }
+
+    new Postagem(novaPostagem).save().then(()=>{
+      req.flash("success_msg", "Postagem salva com sucesso!")
+      res.redirect("/admin/posts")
+    }).catch((err)=>{
+      req.flash("error_msg", "Houve um erro durante o salvamento da posstagem!")
+      res.redirect("/admin/posts")
+    })
+  }
 })
 
 // finished posts
