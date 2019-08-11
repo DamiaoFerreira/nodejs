@@ -9,6 +9,15 @@ const flash = require("connect-flash")
 
 const app = express()
 const admin = require("./routes/admin")
+const usuarios = require("./routes/usuario")
+
+//Modulo de post
+require("./models/Post")
+const Postagem = mongoose.model("Posts")
+
+//Modulo de categoria
+require("./models/Category")
+const Categoria = mongoose.model("Categories")
 
 //Configurações
   // tudo que for app.user se refere a configurações de Midllewares
@@ -50,7 +59,55 @@ const admin = require("./routes/admin")
 
 
   //Rotas
+  app.get("/", (req, res)=>{
+    Postagem.find().populate("categoria").sort({data:"desc"}).then((postagens)=>{
+      res.render("index", {postagens: postagens})
+    }).catch((Err)=>{
+      req.flash("error_msg", "Houve um erro interno")
+      res.redirect("/404")
+    })
+  })
+  
+  //POSTS inicial
+  app.get("/posts/:id", (req, res)=>{
+    Postagem.find({_id: req.params.id}).then((postagem)=>{
+      if(postagem){
+        res.render("postagens/index", {postagem:postagem})
+      }else{
+        req.flash("error_msg", "Não há detalhes para esta postagem")
+        res.redirect("/")
+      }
+    }).catch((err)=>{
+      req.flash("error_msg", "Houve um erro interno")
+      res.redirect("/")
+    })
+  })
+
+  app.get("posts", (req, res)=>{
+    res.send("Lista de postagens")
+  })
+
+  //Categoria - menu
+  app.get("/category", (req, res)=>{
+    Categoria.find().sort({date:'desc'}).then((categoria)=>{
+      res.render("categorias/index", {categorias: categoria})
+    }).catch((error)=>{
+      req.flash("error_msg", "Houve um erro ao listar as categorias")
+      res.redirect("/")
+    })
+  })
+
+  app.get("/category/:id", (req, res)=>{
+    Postagem.find({categoria: req.params.id}).sort({data:"desc"}).then((postagens)=>{
+      res.render("postagens/index", {postagem:postagens})
+    })
+  })
+  
+  app.get("/404", (req,res)=>{
+    res.send("Erro 404")
+  })
   app.use("/admin", admin)
+  app.use("/registry", usuarios)
 
 //Outros
 const port = 8081

@@ -90,7 +90,7 @@ router.post("/category/edit", (req, res)=>{
 })
 
 router.post("/category/deletar", (req, res)=>{
-  Categoria.remove({_id: req.body.id}).then(()=>{
+  Categoria.deleteOne({_id: req.body.id}).then(()=>{
     req.flash("success_msg", "Categoria deletada com sucesso!")
     res.redirect("/admin/category")
   }).catch((err)=>{
@@ -102,7 +102,8 @@ router.post("/category/deletar", (req, res)=>{
 
 // started posts
 router.get("/posts", (req, res)=>{
-  Postagem.find().populate("Categories").sort({data:"desc"}).then((postagens)=>{
+  Postagem.find().populate("categoria").sort({data:"desc"}).then((postagens)=>{
+    //res.send(postagens)
     res.render("admin/posts", {postagens:postagens})
   }).catch((err)=>{
     req.flash("error_msg", "Houver um erro ao listar as postagens")
@@ -131,9 +132,9 @@ router.post("/posts/add",(req, res)=>{
     const novaPostagem = {
       titulo: req.body.title,
       descricao: req.body.describe,
-      conteudo: req.body.content,
-      categoria: req.body.category,
-      slug: req.body.slug
+      conteudo: req.body.content.toString(), // por algum motivo o text area salva um array de string
+      slug: req.body.slug,
+      categoria: req.body.category
     }
 
     new Postagem(novaPostagem).save().then(()=>{
@@ -145,6 +146,53 @@ router.post("/posts/add",(req, res)=>{
     })
   }
 })
+router.get("/posts/edit/:id",(req, res)=>{
+  Postagem.findOne({_id: req.params.id}).then((postagem)=>{
+    Categoria.find().then((categoria)=>{
+      res.render("admin/postsformedit", {postagem: postagem, categorias: categoria})
+    }).catch((err)=>{
+      console.log(err);
+      req.flash("error_msg", "houve um erro ao listar categoria")
+      res.redirect("/admin/posts")
+    })
+  }).catch((err)=>{
+    console.log(err);
+    req.flash("error_msg", "Houve um erro ao carregar o formulário de edição")
+    res.redirect("/admin/posts")
+  })
+})
 
+router.post("/posts/edit", (req, res)=>{
+  Postagem.findOne({_id: req.body.id}).then((postagem)=>{
+    postagem.titulo = req.body.title,
+    postagem.descricao = req.body.describe,
+    postagem.conteudo = req.body.content.toString(), // por algum motivo o text area salva um array de string
+    postagem.slug = req.body.slug,
+    postagem.categoria = req.body.category
+
+    postagem.save().then(()=>{
+      req.flash("success_msg", "Postagem salva como sucesso!")
+      res.redirect("/admin/posts")
+    }).catch((err)=>{
+      req.flash("error_msg", "erro!")
+      res.redirect("/admin/posts")  
+    })
+  }).catch((err)=>{
+    console.log(err);
+    req.flash("error_msg", "Houve um erro ao editar postagem!")
+    res.redirect("/admin/posts")
+  })
+})
+
+router.post("/posts/deletar", (req, res)=>{
+  Postagem.deleteOne({_id: req.body.id}).then(()=>{
+    req.flash("success_msg", "Postagem deletada com sucesso!")
+    res.redirect("/admin/posts")
+  }).catch((err)=>{
+    req.flash("error_msg", "Houve um error deletar a postagem")
+    res.redirect("/admin/posts")
+  })
+  
+})
 // finished posts
 module.exports = router

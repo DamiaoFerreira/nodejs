@@ -2,11 +2,21 @@
 <hr>
 <a href="/admin/posts/form"><button type="button" name="addpost" class="btn btn-success">Nova postagem</button></a>
 {{#each postagens}}
-<div class="card">
-  <div class="body-card">
-    {{titulo}}
+<div class="card mt-4">
+  <div class="card-body">
+    <h4>{{titulo}}</h4>
+    <small>Descrição: {{descricao}}</small>
+    <small>Categoria: {{categoria.nome}}</small><br/>
+    <small>Cadastrado em {{data}}</small><br/>
+    <br/>
+    <a href="/admin/posts/edit/{{_id}}"><button class="btn btn-success">EDITAR</button></a>
+    <form action="/admin/posts/deletar" method="POST">
+      <input type="hidden" value="{{_id}}"name="id"/>
+      <button type="submit" class="btn btn-danger">DELETAR</button>
+    </form>
   </div>
 </div>
+
 {{else}}
 <p>Nenhuma postagem registrada</p>
 {{/each}}
