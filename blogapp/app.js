@@ -19,6 +19,11 @@ const Postagem = mongoose.model("Posts")
 require("./models/Category")
 const Categoria = mongoose.model("Categories")
 
+// authentication
+const passport = require("passport")
+require("./config/auth")(passport)
+
+
 //Configurações
   // tudo que for app.user se refere a configurações de Midllewares
   // session
@@ -28,13 +33,19 @@ const Categoria = mongoose.model("Categories")
     saveUminitialized: true
   }))
 
+  // authentication
+  app.use(passport.initialize())
+  app.use(passport.session())
   app.use(flash())
+
   // middleware -> chamando antes de todo request
   app.use((req, res, next)=>{
     //Criando variaveis globais
     // console.log("Middleware executado");
     res.locals.success_msg = req.flash("success_msg"),
     res.locals.error_msg = req.flash("error_msg")
+    res.locals.error = req.flash("error")
+    res.locals.user = req.user || null
     next(); // liberar a aplicação
   })
 

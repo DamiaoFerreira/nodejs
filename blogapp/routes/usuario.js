@@ -4,6 +4,8 @@ const mongoose = require("mongoose")
 require("../models/User")
 const Usuario = mongoose.model("Users")
 const bcrypt = require("bcryptjs")
+const passport = require("passport")
+
 
 router.get("/", (req, res)=>{
     res.render("usuarios/registry")
@@ -78,5 +80,19 @@ router.post("/add", (req, res)=>{
 
 router.get("/login", (req, res) =>{
   res.render("usuarios/login")
+})
+
+router.post("/login", (req, res, next)=>{
+  passport.authenticate("local", {
+    successRedirect: "/",
+    failureRedirect: "login",
+    failureFlash: true
+  })(req, res, next)
+})
+
+router.get("/logout", (req, res)=>{
+  req.logout()
+  req.flash("success_msg", "Deslogado com sucesso")
+  res.redirect("/")
 })
 module.exports = router
